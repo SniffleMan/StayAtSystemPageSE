@@ -11,13 +11,13 @@
 PluginHandle g_pluginHandle = kPluginHandle_Invalid;
 
 // 83 79 30 00 76 10
-RelocPtr<uintptr_t> RememberCurrentTabIdxAddr(0x008F46F0);  // 1_5_80
+RelocPtr<uintptr_t> RememberCurrentTabIdxAddr(0x008F46F0);  // 1_5_97
 // 48 8B C4 55 57 41 54 41 56 41 57 48 8D 68 A1 48 81 EC D0 00 00 00 48 C7 45 27 FE FF FF FF
-RelocPtr<uintptr_t> GetCurrentTabIndexAddr(0x008F3AD0 + 0x213);  // 1_5_80
+RelocPtr<uintptr_t> GetCurrentTabIndexAddr(0x008F3AD0 + 0x213);  // 1_5_97
 
 
 // 83 79 30 00 76 10 + 10
-RelocPtr<uintptr_t> SavedTabIndexAddr(0x02F4F1C0);  // 1_5_80
+RelocPtr<uintptr_t> SavedTabIndexAddr(0x02F4F1C0);  // 1_5_97
 static UInt32 &SavedTabIndex = *(UInt32*)SavedTabIndexAddr.GetUIntPtr();
 
 static UInt32 GetSavedTabIndex(UInt8 rcx, UInt8 rdx)
@@ -46,7 +46,6 @@ extern "C"
 		gLog.OpenRelative(CSIDL_MYDOCUMENTS, "\\My Games\\Skyrim Special Edition\\SKSE\\StayAtSystemPage.log");
 
 		_MESSAGE("StayAtSystemPage v%s", SYSP_VERSION_VERSTRING);
-
 		info->infoVersion = PluginInfo::kInfoVersion;
 		info->name = "StayAtSystemPage";
 		info->version = SYSP_VERSION_MAJOR;
@@ -58,12 +57,11 @@ extern "C"
 			return false;
 		}
 
-		switch (skse->runtimeVersion) {
-		case RUNTIME_VERSION_1_5_73:
-		case RUNTIME_VERSION_1_5_80:
+		switch (skse->skseVersion) {
+		case PACKED_SKSE_VERSION:
 			break;
 		default:
-			_MESSAGE("This plugin is not compatible with this versin of game.");
+			_ERROR("This plugin is out of date with the installed version of SKSE.");
 			return false;
 		}
 
@@ -72,8 +70,6 @@ extern "C"
 
 	bool SKSEPlugin_Load(const SKSEInterface * skse)
 	{
-		_MESSAGE("Load");
-
 		if (!g_branchTrampoline.Create(1024 * 64)) {
 			_ERROR("couldn't create branch trampoline. this is fatal. skipping remainder of init process.");
 			return false;
